@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./style.css";
 const Main = () => {
-  const arr = [];
+  let arr = [];
+  const [grid, setGrid] = useState([]);
+  let [hmap, setMap] = useState({});
+  const [count, setCount] = useState(0);
   const InputRef = React.createRef();
   for (var i = 0; i < 10; i++) {
     let temp = [];
@@ -10,32 +13,41 @@ const Main = () => {
     }
     arr.push(temp);
   }
-
-  console.log(arr[0][0]);
+  // setGrid(arr);
+  console.log("render");
   const handleChange = (e, i, j) => {
-    const value = e.target.value;
+    let value = e.target.value;
+    console.log("i+j", i + "" + j);
+    let newObj = {};
 
-    arr[i][j] = value;
+    newObj = { ...hmap, [i + "" + j]: value };
+    // hmap[i + "" + j] = parseInt(value);
+    setMap(newObj);
+    console.log(hmap);
   };
 
   const calc = (e) => {
-    console.log(InputRef.value);
-    console.log(e);
     if (e.key == "Enter") {
       const value = e.target.value;
+      const id = e.target.id;
       if (value.includes(",")) {
         const indexArr = value.split(",");
-        console.log(InputRef);
         let sum = 0;
         for (let i = 0; i < indexArr.length; i += 2) {
-          let temp = arr[indexArr[i]][indexArr[i + 1]];
-          sum += temp;
+          if (!hmap[`${indexArr[i]}${indexArr[i + 1]}`]) {
+            hmap[`${indexArr[i]}${indexArr[i + 1]}`] = 0;
+          }
+          sum = sum + parseInt(hmap[`${indexArr[i]}${indexArr[i + 1]}`]);
+          console.log("sum", sum);
         }
+        hmap[id] = sum;
+        console.log("hmap", hmap);
 
-        arr[i][j] = sum;
+        setCount(count + 1);
       }
     }
   };
+
   return (
     <div>
       {arr.map((ele, i) => {
@@ -46,7 +58,8 @@ const Main = () => {
                 <td>
                   <input
                     className="cell"
-                    id={`[${i}][${j}]`}
+                    id={`${i}${j}`}
+                    value={hmap[i + "" + j]}
                     onChange={(e) => {
                       handleChange(e, i, j);
                     }}
